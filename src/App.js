@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import Login from './components/Login'
-import Navigation from './components/Navigation'
+import Navigation from '/components/Navigation'
 import Model1 from './components/Model1'
 import Model2 from './components/Model2'
 import Model3 from './components/Model3'
