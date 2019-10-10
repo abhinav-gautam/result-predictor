@@ -27,6 +27,7 @@ class Login extends React.Component{
     validate=()=>{
 		let emailError='';
 		let passwordError='';
+		this.setState({emailError,passwordError})
 		if (!this.state.loginEmail.includes('@')){
 			emailError='*Invalid Email';
 		}
@@ -105,14 +106,13 @@ class Login extends React.Component{
 			      </div>
 			    </fieldset>
 			    <div className = "center">
-				    <div className="pr4 mt3">
+				    <div className="pr4 mt3 center">
 				      <input 
 				      onClick={onSignInSubmit} 
 				      className="b ph3 pv2 shadow-3 input-reset link ba b--black bg-transparent grow pointer f6 dib" 
 				      type="submit" 
 				      value="Sign in"/>
 				    </div>
-			
 			    </div>
 			    {//Server Form Validation
 		      		this.state.error==="wrong credentials"
