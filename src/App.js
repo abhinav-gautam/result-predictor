@@ -34,7 +34,7 @@ class App extends React.Component {
         {
           this.state.route === 'login'
           ? <Login onRouteChange = {this.onRouteChange}/>
-          : this.state.route === 'model1'
+          : this.state.route === 'home'
             ? <Model1/>
             : this.state.route === 'model2'
               ? <Model2/>
