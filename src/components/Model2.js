@@ -19,7 +19,7 @@ class Model2 extends React.Component{
     }
 
     onPredict = () =>{
-        fetch("https://radiant-falls-58345.herokuapp.com/predict_model2",{
+        fetch("http://127.0.0.1:12345/predict_model2",{
             method:'post',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify([{
@@ -32,7 +32,7 @@ class Model2 extends React.Component{
             }])
         }).then(response=>response.json())
         .then(response =>{
-            // console.log(response)
+            console.log(response)
             // console.log('Response Type:'+typeof(response['prediction']))
             if(response['prediction'] === '[1]'){
                 this.setState({prediction:1})

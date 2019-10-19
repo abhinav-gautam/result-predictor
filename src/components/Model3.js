@@ -21,7 +21,7 @@ class Model3 extends React.Component{
     }
 
     onPredict = () =>{
-        fetch("https://radiant-falls-58345.herokuapp.com/predict_model3",{
+        fetch("http://127.0.0.1:12345/predict_model3",{
             method:'post',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify([{

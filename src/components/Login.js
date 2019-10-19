@@ -59,7 +59,7 @@ class Login extends React.Component{
 				firebase.auth().onAuthStateChanged((user)=> {
 					if (user) {
 					  // User is signed in.
-					  this.props.onRouteChange('home')
+					  this.props.onRouteChange('loggedin')
 					} else {
 					  // No user is signed in.
 					}
