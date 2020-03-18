@@ -22,36 +22,45 @@ class BatchResults extends React.Component{
     render(){
       const{fileUploadHandler, error, fileValidationHandler, fileDownloadHandler, present_state, showSpinner} = this.props
       return(
-        <Container>
+        <Container >
             <Form>
-                <Row className="justify-content-md-center">
-                  <Col sm md="auto">
-                  <Form.Group>
-                    <Form.Control type="file" onClick={this.resetState} onChange={fileValidationHandler} 
-                    name="file" id="file" className="inputfile" 
-                    accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
-                  </Form.Group>
+                <Row className="justify-content-md-center   ">
+                  <Col xs={12} md={'auto'}>
+                    
+                      <div className="pa3 center">
+                        <Form.Group>
+                          <Form.Control type="file" onClick={this.resetState} onChange={fileValidationHandler} 
+                          name="file" id="file" className="inputfile" 
+                          accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+                        </Form.Group>
+
+                      </div>
+                      
                   </Col>
                 
               
-              <Col sm md="auto">
-              <Form.Group>
-                Select Prediction Model: 
-                <select defaultValue="Model5" onChange={this.modelSelectionHandler}>
-                  <option value="Model5">Model 5</option>
-                  <option value="Model4">Model 4</option>
-                  <option value="Model3">Model 3</option>
-                  <option value="Model2">Model 2</option>
-                  <option value="Model1">Model 1</option>
-                </select>
+                  <Col xs={12} md={'auto'} >
+                    <div className="pa3 center">
+                      <Form.Group>
+                        Select Prediction Model: 
+                        <select defaultValue="Model5" onChange={this.modelSelectionHandler}>
+                          <option value="Model5">Model 5</option>
+                          <option value="Model4">Model 4</option>
+                          <option value="Model3">Model 3</option>
+                          <option value="Model2">Model 2</option>
+                          <option value="Model1">Model 1</option>
+                        </select>
 
-              </Form.Group>
-              </Col>
+                      </Form.Group>
+
+                    </div>
+                    
+                  </Col>
               
-              </Row>
-              <Row className="justify-content-md-center">
-                <Col sm md="auto"><Button variant="primary" onClick={fileUploadHandler}>Upload</Button>     </Col>
-                <Col sm md="auto"><Button variant="primary" onClick={fileDownloadHandler}>Download</Button>   </Col>
+                </Row>
+                <Row className="justify-content-md-center">
+                  <Col sm md="auto" className='pa3'><Button variant="primary" onClick={fileUploadHandler}>Upload</Button>     </Col>
+                  <Col sm md="auto" className='pa3'><Button variant="primary" onClick={fileDownloadHandler}>Download</Button>   </Col>
                 </Row>
       
             </Form>
