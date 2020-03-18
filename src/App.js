@@ -15,8 +15,8 @@ class App extends React.Component {
   constructor(){
     super();
     this.state = {
-      route : 'loggedin',
-      isLoggedIn : true,
+      route : 'login',
+      isLoggedIn : false,
       selectedFile: null,
       selectedFileName: null,
       isUploading: false,
@@ -77,7 +77,7 @@ class App extends React.Component {
   predictionHandler = () =>{
     storage.ref('files').child(this.state.selectedFileName).getDownloadURL()
       .then(url=>{
-        fetch("http://127.0.0.1:12346/batch_predict",{
+        fetch("https://rp-excel-manipulation-api.herokuapp.com/batch_predict",{
           method:'post',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify([{

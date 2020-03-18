@@ -18,6 +18,7 @@ class Model3 extends React.Component{
             semester4_result:1,
             isBackLogPresent4:0,
             prediction:null,
+            error:null,
             showSpinner:false,
         }
     }
@@ -27,8 +28,8 @@ class Model3 extends React.Component{
     }
 
     onPredict = () =>{
-        this.setState({prediction:null,showSpinner:true})
-        fetch("http://127.0.0.1:12345/predict_model3",{
+        this.setState({prediction:null,showSpinner:true,error:null})
+        fetch("https://radiant-falls-58345.herokuapp.com/predict_model3",{
             method:'post',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify([{
@@ -50,7 +51,10 @@ class Model3 extends React.Component{
             }else {
                 this.setState({prediction:0,showSpinner:false})
             }
-        }).catch(err=>console.log(err))
+        }).catch(err=>{
+            this.setState({showSpinner:false,error:"Internal server error. Error Code: OP1. Contact admin."})
+            console.log(err)
+        })
     }
     render(){
         return(
@@ -138,8 +142,12 @@ class Model3 extends React.Component{
                             this.state.prediction === null
                             ?<p>
                             {this.state.showSpinner === true
-                            ? <p><Spinner animation='border' variant='success' /> Predicting </p>
-                            : null
+                            ? <p className = "green"><Spinner animation='border' variant='success' /> Predicting </p>
+                            : <p>{
+                                this.state.error === null
+                                ?null
+                                :<p className="red b">{this.state.error}</p>
+                                }</p>
                             }
                         </p>
                             :(
