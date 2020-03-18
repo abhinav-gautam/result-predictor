@@ -1,4 +1,10 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import Spinner from 'react-bootstrap/Spinner';
+
 
 class Model1 extends React.Component{
     constructor(props){
@@ -8,7 +14,8 @@ class Model1 extends React.Component{
             isBackLogPresent1:0,
             semester2_result:1,
             isBackLogPresent2:0,
-            prediction:null
+            prediction:null,
+            showSpinner:false,
         }
     }
 
@@ -17,7 +24,8 @@ class Model1 extends React.Component{
     }
 
     onPredict = () =>{
-        fetch("https://radiant-falls-58345.herokuapp.com/predict_model1",{
+        this.setState({prediction:null,showSpinner:true})
+        fetch("http://127.0.0.1:12345/predict_model1",{
             method:'post',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify([{
@@ -31,70 +39,84 @@ class Model1 extends React.Component{
             // console.log(response)
             // console.log('Response Type:'+typeof(response['prediction']))
             if(response['prediction'] === '[1]'){
-                this.setState({prediction:1})
+                this.setState({prediction:1,showSpinner:false})
             }else {
-                this.setState({prediction:0})
+                this.setState({prediction:0,showSpinner:false})
             }
         }).catch(err=>console.log(err))
+
     }
     render(){
         return(
-            <div>
-                <div className = 'Model1'>
-                    <h1 className = 'pa4'>Model 1</h1>
-                    <div className = 'flex center pb4'>
-                        <div className = "ph4">
-                            Semester 1 Result
-                            <div>
-                                <select name="semester1_result" onChange={this.onResultsChanged}>
-                                    <option value='1' selected='selected'>Pass</option>
-                                    <option value='0'>Fail</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className = "ph4">
-                            Semester 1 Backlogs
-                            <div>
-                                <select name="isBackLogPresent1" onChange={this.onResultsChanged}>
-                                    <option value='1'>Yes</option>
-                                    <option value='0' selected='selected'>No</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className = "ph4">
-                            Semester 2 Result
-                            <div>
-                                <select name="semester2_result" onChange={this.onResultsChanged}>
-                                    <option value='1' selected='selected'>Pass</option>
-                                    <option value='0'>Fail</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className = "ph4">
-                            Semester 2 Backlogs
-                            <div>
-                                <select name="isBackLogPresent2" onChange={this.onResultsChanged}>
-                                    <option value='1'>Yes</option>
-                                    <option value='0' selected='selected'>No</option>
-                                </select>
-                            </div>
-                        </div>                       
+            <Container>
+                
+                    <div className = 'Model1'>
+                        <Row>
+                            <Col sm>
+                               <h4 className = 'pa4'>Model 1</h4>
+                            </Col>
+
+                        </Row>
+                        <Row className = 'flex center pb4'>
+                            <Col sm className = "ph4">
+                                Semester 1 Result
+                                <div>
+                                    <select name="semester1_result" onChange={this.onResultsChanged}>
+                                        <option value='1' selected='selected'>Pass</option>
+                                        <option value='0'>Fail</option>
+                                    </select>
+                                </div>
+                            </Col>
+                            <Col className = "ph4">
+                                Semester 1 Backlogs
+                                <div>
+                                    <select name="isBackLogPresent1" onChange={this.onResultsChanged}>
+                                        <option value='1'>Yes</option>
+                                        <option value='0' selected='selected'>No</option>
+                                    </select>
+                                </div>
+                            </Col>
+                            <Col className = "ph4">
+                                Semester 2 Result
+                                <div>
+                                    <select name="semester2_result" onChange={this.onResultsChanged}>
+                                        <option value='1' selected='selected'>Pass</option>
+                                        <option value='0'>Fail</option>
+                                    </select>
+                                </div>
+                            </Col>
+                            <Col className = "ph4">
+                                Semester 2 Backlogs
+                                <div>
+                                    <select name="isBackLogPresent2" onChange={this.onResultsChanged}>
+                                        <option value='1'>Yes</option>
+                                        <option value='0' selected='selected'>No</option>
+                                    </select>
+                                </div>
+                            </Col>                       
+                        </Row>
+                        <Button variant="primary" onClick={this.onPredict}>Predict</Button>
+                        <div className = 'pv4'>
+                            <h4>Predicted Result:</h4>
+                            {
+                                this.state.prediction === null
+                                ?<p>
+                                    {this.state.showSpinner === true
+                                    ? <p><Spinner animation='border' variant='success' /> Predicting </p>
+                                    : null
+                                    }
+                                </p>
+                                
+                                :(
+                                    this.state.prediction ===1
+                                    ? <p className = "green">Pass</p>
+                                    : <p className = "red">Fail</p>
+                                )
+                            }
+                        </div>    
                     </div>
-                    <button onClick={this.onPredict}>Predict</button>
-                    <div className = 'pv4'>
-                        <h3>Predicted Result:</h3>
-                        {
-                            this.state.prediction === null
-                            ?null
-                            :(
-                                this.state.prediction ===1
-                                ? <p className = "green">Pass</p>
-                                : <p className = "red">Fail</p>
-                            )
-                        }
-                    </div>    
-                </div>
-            </div>
+                
+            </Container>
         )
     }
 }

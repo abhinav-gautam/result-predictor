@@ -8,17 +8,27 @@ import Model3 from './components/Model3'
 import Model4 from './components/Model4'
 import Model5 from './components/Model5'
 import BatchResults from './components/BatchResults'
+import {storage} from './components/Firebase'
 
 
 class App extends React.Component {
   constructor(){
     super();
     this.state = {
-      route : 'login',
-      isLoggedIn : false
+      route : 'loggedin',
+      isLoggedIn : true,
+      selectedFile: null,
+      selectedFileName: null,
+      isUploading: false,
+      predicted_file_name:null,
+      present_state:"No File Selected.",
+      selected_model:'Model5',
+      error:null,
+      showSpinner:false,
     }
   }
 
+  // Change routes
   onRouteChange = (route) =>{
     if(route === 'loggedin'){
       this.setState({isLoggedIn:true})
@@ -26,25 +36,185 @@ class App extends React.Component {
     this.setState({route:route})
   }
 
+  // Reset state
+  resetState = () =>{
+    document.getElementById('file').value=null
+    this.setState({
+      selectedFile:null,
+      selectedFileName:null,
+      isUploading:false,
+      predicted_file_name:null,
+      present_state:"No file selected.",
+      error:null,
+      showSpinner:false,
+    })
+  }
+
+  // Validate file selected
+  fileValidationHandler = (event) =>{
+    const acceptedFiles = ["xlsx", "csv", "xls"];
+    const fileNameExtension = event.target.files[0].name.split('.')
+    if (acceptedFiles.indexOf(fileNameExtension[fileNameExtension.length-1])>=0) {
+    
+      this.setState({
+        selectedFile:event.target.files[0],
+        selectedFileName:event.target.files[0].name,
+        present_state:"File Validated. Ready to upload."
+      })
+
+    }else{
+      event.target.value = null
+      alert("File type must be xlsx, xls or csv")
+    }
+  }
+
+  //Model Selection Handler
+  modelSelectionHandler = selected_model =>{
+    this.setState({selected_model})  
+  }
+
+  //Prediction Handler
+  predictionHandler = () =>{
+    storage.ref('files').child(this.state.selectedFileName).getDownloadURL()
+      .then(url=>{
+        fetch("http://127.0.0.1:12346/batch_predict",{
+          method:'post',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify([{
+            "url":url,
+            "name":this.state.selectedFileName,
+            "selected_model":this.state.selected_model
+          }])
+        })
+        .then(response=>response.json())
+        .then(response=>{
+          if(response['status']===200){
+            console.log("Predictions Done!");  
+
+            this.setState({
+              predicted_file_name:response['predicted_file_name'],
+              present_state:"Results Predicted. File Ready to Download.",
+              showSpinner:false,
+            })  
+          }else{
+            console.log(response['trace']);
+            
+            this.resetState()
+            this.setState({error:"Internal server error. Error Code: PH1. Contact admin."})
+          }         
+        })
+        .catch(err=>{
+          console.log(err)
+          this.resetState()
+          this.setState({error:"Internal server error. Error Code: PH2. Contact admin."})
+        })
+      })
+      .catch(error=>{
+        console.log(error);
+        this.resetState()
+        this.setState({error:"Internal server error. Error Code: PH3. Contact admin."})
+      })
+  }
+
+  //Upload File
+  fileUploadHandler=()=>{
+    if(this.state.selectedFile){
+      const uploadTask = storage.ref(`files/${this.state.selectedFileName}`).put(this.state.selectedFile)
+
+      this.setState({
+        isUploading:true,
+        present_state:"Uploading File.",
+        showSpinner:true
+      })
+
+      uploadTask.on('state_changed',
+        (snapshot)=>{
+          //progress
+        },
+        (error)=>{
+          //error
+          console.log(error);
+          this.setState({error:"Internal server error. Error Code: UF1. Contact admin.",showSpinner:false})
+        },
+        ()=>{
+          //complete
+          console.log("Upload Done!");          
+          this.setState({
+            present_state:"File Uploaded. Predicting Results.",
+            isUploading:false,
+          })
+          this.predictionHandler()
+        }
+      );
+    }else{
+      this.setState({error:"No File Selected."})
+    }
+  }
+
+  // Download File
+  fileDownloadHandler = () =>{  
+    if (this.state.predicted_file_name){
+      
+      this.setState({present_state:"File will be downloaded.", showSpinner:false})
+      
+      storage.ref('files').child(this.state.predicted_file_name).getDownloadURL()
+      .then(url=>{
+        fetch(url)
+        .then(response=>{
+          window.location.href = response.url;
+        })
+        .catch(error=>{
+          console.log();
+          this.resetState()
+          this.setState({error:"Internal server error. Error Code: DF1. Contact admin."})       
+        })
+
+        console.log("Download Done!");
+
+        this.resetState()
+        this.setState({present_state:"File will be downloaded."})
+      })
+      .catch(error=>{
+        console.log();
+        this.resetState()
+        this.setState({error:"Internal server error. Error Code: DF2. Contact admin."})
+      })
+    }
+  }
+
   render(){
-    const {isLoggedIn} = this.state
+    const {isLoggedIn, selectedFile, present_state, route, error, showSpinner} = this.state
+    const {onRouteChange, modelSelectionHandler,
+          fileDownloadHandler, fileUploadHandler,
+          fileValidationHandler, resetState} = this
     return (
       <div className = 'App'>
-        <Navigation onRouteChange={this.onRouteChange} isLoggedIn={isLoggedIn} route={this.state.route}/>
+        <Navigation onRouteChange={onRouteChange} isLoggedIn={isLoggedIn} route={route}/>
+        <br/>
         {
-          this.state.route === 'login'
-          ? <Login onRouteChange = {this.onRouteChange}/>
-          : this.state.route === 'batch'
-            ? <BatchResults/>
-            :this.state.route === 'home'
+          route === 'login'
+          ? <Login onRouteChange = {onRouteChange}/>
+          : route === 'batch'
+            ? <BatchResults 
+                error={error}
+                resetState={resetState}
+                modelSelectionHandler={modelSelectionHandler}
+                present_state={present_state} 
+                selectedFile={selectedFile}
+                fileDownloadHandler={fileDownloadHandler} 
+                fileUploadHandler={fileUploadHandler}
+                fileValidationHandler={fileValidationHandler}
+                showSpinner = {showSpinner}
+              />
+            : route === 'home'
               ? <Model1/>
-              : this.state.route === 'model2'
+              : route === 'model2'
                 ? <Model2/>
-                : this.state.route === 'model3'
+                : route === 'model3'
                   ? <Model3/>
-                  : this.state.route === 'model4'
+                  : route === 'model4'
                     ? <Model4/>
-                    : this.state.route === 'model5'
+                    : route === 'model5'
                       ? <Model5/>
                       : null
         }  
