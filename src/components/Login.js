@@ -113,10 +113,11 @@ class Login extends React.Component{
 				      type="submit" 
 				      value="Sign in"/>
 				    </div>
+					
 			    </div>
 			    {//Server Form Validation
 		      		this.state.error==="wrong credentials"
-		      		?<label className="db fw6 lh-copy f6 red">*Incorrect Email or Password</label>
+		      		?<p className="db fw6 lh-copy f6 red">*Incorrect Email or Password</p>
 		      		:null
 				}
 			  </div>

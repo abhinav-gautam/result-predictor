@@ -15,8 +15,8 @@ class App extends React.Component {
   constructor(){
     super();
     this.state = {
-      route : 'login',
-      isLoggedIn : false,
+      route : 'batch',
+      isLoggedIn : true,
       selectedFile: null,
       selectedFileName: null,
       isUploading: false,
@@ -36,6 +36,34 @@ class App extends React.Component {
     this.setState({route:route})
   }
 
+  // Sign Out
+  signOut = () =>{
+    this.resetState()
+    this.setState({route:'login',isLoggedIn:false})
+  }
+
+  // Download Sample Result File
+  downloadSample = () =>{
+    this.setState({showSpinner:true,present_state:'Downloading Sample.'})
+    storage.ref('files').child("Sample.xlsx").getDownloadURL()
+      .then(url=>{
+        fetch(url)
+        .then(response=>{
+          window.location.href = response.url;
+        })
+        .catch(error=>{
+          console.log(error);
+          this.resetState()
+          this.setState({error:"Internal server error. Error Code: DS1. Contact admin."})       
+        })
+        this.setState({showSpinner:false,present_state:'No File Selected.'})
+      })
+      .catch(error=>{
+        console.log(error);
+        this.resetState()
+        this.setState({error:"Internal server error. Error Code: DS2. Contact admin."})
+      })
+  }
   // Reset state
   resetState = () =>{
     document.getElementById('file').value=null
@@ -164,7 +192,7 @@ class App extends React.Component {
           window.location.href = response.url;
         })
         .catch(error=>{
-          console.log();
+          console.log(error);
           this.resetState()
           this.setState({error:"Internal server error. Error Code: DF1. Contact admin."})       
         })
@@ -175,7 +203,7 @@ class App extends React.Component {
         this.setState({present_state:"File will be downloaded."})
       })
       .catch(error=>{
-        console.log();
+        console.log(error);
         this.resetState()
         this.setState({error:"Internal server error. Error Code: DF2. Contact admin."})
       })
@@ -186,10 +214,11 @@ class App extends React.Component {
     const {isLoggedIn, selectedFile, present_state, route, error, showSpinner} = this.state
     const {onRouteChange, modelSelectionHandler,
           fileDownloadHandler, fileUploadHandler,
-          fileValidationHandler, resetState} = this
+          fileValidationHandler, resetState,
+          signOut, downloadSample} = this
     return (
       <div className = 'App'>
-        <Navigation onRouteChange={onRouteChange} isLoggedIn={isLoggedIn} route={route}/>
+        <Navigation onRouteChange={onRouteChange} isLoggedIn={isLoggedIn} route={route} signOut = {signOut}/>
         <br/>
         {
           route === 'login'
@@ -205,6 +234,7 @@ class App extends React.Component {
                 fileUploadHandler={fileUploadHandler}
                 fileValidationHandler={fileValidationHandler}
                 showSpinner = {showSpinner}
+                downloadSample = {downloadSample}
               />
             : route === 'home'
               ? <Model1/>

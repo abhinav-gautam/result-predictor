@@ -20,25 +20,21 @@ class BatchResults extends React.Component{
     }
     
     render(){
-      const{fileUploadHandler, error, fileValidationHandler, fileDownloadHandler, present_state, showSpinner} = this.props
+      const{fileUploadHandler, error, fileValidationHandler, fileDownloadHandler, present_state, showSpinner, downloadSample} = this.props
       return(
         <Container >
             <Form>
                 <Row className="justify-content-md-center   ">
-                  <Col xs={12} md={'auto'}>
-                    
+                  <Col xs={12} md={'auto'}>                  
                       <div className="pa3 center">
                         <Form.Group>
                           <Form.Control type="file" onClick={this.resetState} onChange={fileValidationHandler} 
                           name="file" id="file" className="inputfile" 
                           accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
                         </Form.Group>
-
-                      </div>
-                      
+                      </div>                     
                   </Col>
-                
-              
+                  
                   <Col xs={12} md={'auto'} >
                     <div className="pa3 center">
                       <Form.Group>
@@ -50,19 +46,20 @@ class BatchResults extends React.Component{
                           <option value="Model2">Model 2</option>
                           <option value="Model1">Model 1</option>
                         </select>
-
                       </Form.Group>
-
-                    </div>
-                    
-                  </Col>
-              
+                    </div>           
+                  </Col>   
                 </Row>
+
                 <Row className="justify-content-md-center">
                   <Col sm md="auto" className='pa3'><Button variant="primary" onClick={fileUploadHandler}>Upload</Button>     </Col>
                   <Col sm md="auto" className='pa3'><Button variant="primary" onClick={fileDownloadHandler}>Download</Button>   </Col>
-                </Row>
-      
+                  <Col xs={12} md={'auto'}>
+                    <div className="pa3 center">
+                      <Button variant="link" onClick={downloadSample}>Download Sample Result File</Button>
+                    </div>
+                  </Col>
+                </Row>      
             </Form>
                         
             
