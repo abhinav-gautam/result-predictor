@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Login from './components/Login'
 import Navigation from './components/Navigation'
+import Documentation from './components/Documentation'
 import Model1 from './components/Model1'
 import Model2 from './components/Model2'
 import Model3 from './components/Model3'
@@ -15,8 +16,8 @@ class App extends React.Component {
   constructor(){
     super();
     this.state = {
-      route : 'batch',
-      isLoggedIn : true,
+      route : 'login',
+      isLoggedIn : false,
       selectedFile: null,
       selectedFileName: null,
       isUploading: false,
@@ -30,7 +31,7 @@ class App extends React.Component {
 
   // Change routes
   onRouteChange = (route) =>{
-    if(route === 'loggedin'){
+    if(route === 'documentation'){
       this.setState({isLoggedIn:true})
     }
     this.setState({route:route})
@@ -66,7 +67,9 @@ class App extends React.Component {
   }
   // Reset state
   resetState = () =>{
-    document.getElementById('file').value=null
+    if(document.getElementById('file')){
+     document.getElementById('file').value=null
+    }
     this.setState({
       selectedFile:null,
       selectedFileName:null,
@@ -246,7 +249,12 @@ class App extends React.Component {
                     ? <Model4/>
                     : route === 'model5'
                       ? <Model5/>
-                      : null
+                      : route === 'documentation'
+                        ? <Documentation 
+                        downloadSample={downloadSample}
+                        onRouteChange={onRouteChange}
+                        />
+                        : null
         }  
       </div> 
     );

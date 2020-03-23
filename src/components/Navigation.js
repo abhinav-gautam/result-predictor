@@ -16,11 +16,13 @@ const Navigation = ({isLoggedIn,onRouteChange,route,signOut}) =>{
 					<Navbar.Toggle aria-controls="responsive-navbar-nav" />
  					<Navbar.Collapse id="responsive-navbar-nav">
 						<Nav className="mr-auto">
-							<Nav.Link href="" onClick={()=>onRouteChange('batch')}>Batch Results</Nav.Link>
-							<Nav.Link href="" onClick={()=>onRouteChange('home')}>Single Student</Nav.Link>
+							<Nav.Link href="" onClick={()=>onRouteChange('batch')}>Batch Result</Nav.Link>
+							<Nav.Link href="" onClick={()=>onRouteChange('home')}>Single Result</Nav.Link>
 						</Nav>
 
 						<Nav>
+							<Nav.Link href="" onClick={()=>onRouteChange('documentation')}>Documentation</Nav.Link>
+
 							<Nav.Link href="" onClick={()=>signOut()}>Sign Out</Nav.Link>
 
 						</Nav>
@@ -31,7 +33,7 @@ const Navigation = ({isLoggedIn,onRouteChange,route,signOut}) =>{
 					["home","model2","model3","model4","model5"].indexOf(route)>=0
 					? <div>
 						<Navbar>
-							<Navbar.Brand href="#">Single Student</Navbar.Brand>
+							<Navbar.Brand href="#">Single Result</Navbar.Brand>
 							<Nav fill variant="tabs"  defaultActiveKey="link-1" className="mr-auto">
 								<Container>
 									<Row className="justify-content-md-center">

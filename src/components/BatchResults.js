@@ -52,8 +52,22 @@ class BatchResults extends React.Component{
                 </Row>
 
                 <Row className="justify-content-md-center">
-                  <Col sm md="auto" className='pa3'><Button variant="primary" onClick={fileUploadHandler}>Upload</Button>     </Col>
-                  <Col sm md="auto" className='pa3'><Button variant="primary" onClick={fileDownloadHandler}>Download</Button>   </Col>
+                  <Col sm md="auto" className='pa3'>
+                    {
+                      present_state === 'File Validated. Ready to upload.'
+                      ? <Button variant="primary" onClick={fileUploadHandler} >Upload & Predict</Button>
+                      : <Button variant="primary" onClick={fileUploadHandler} disabled>Upload & Predict</Button>
+                    }
+                        
+                  </Col>
+                  <Col sm md="auto" className='pa3'>
+                    {
+                      present_state === 'Results Predicted. File Ready to Download.'
+                      ? <Button variant="primary" onClick={fileDownloadHandler}>Download</Button>   
+                      : <Button variant="primary" onClick={fileDownloadHandler} disabled>Download</Button>   
+                    }
+                    
+                  </Col>
                   <Col xs={12} md={'auto'}>
                     <div className="pa3 center">
                       <Button variant="link" onClick={downloadSample}>Download Sample Result File</Button>
