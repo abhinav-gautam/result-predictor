@@ -9,6 +9,7 @@ import Model3 from './components/Model3'
 import Model4 from './components/Model4'
 import Model5 from './components/Model5'
 import BatchResults from './components/BatchResults'
+import Messenger from './components/Messenger'
 import {storage} from './components/Firebase'
 
 
@@ -222,6 +223,7 @@ class App extends React.Component {
     return (
       <div className = 'App'>
         <Navigation onRouteChange={onRouteChange} isLoggedIn={isLoggedIn} route={route} signOut = {signOut}/>
+        <Messenger/>
         <br/>
         {
           route === 'login'
