@@ -223,7 +223,11 @@ class App extends React.Component {
     return (
       <div className = 'App'>
         <Navigation onRouteChange={onRouteChange} isLoggedIn={isLoggedIn} route={route} signOut = {signOut}/>
-        <Messenger/>
+        {
+          isLoggedIn === true
+          ? <Messenger/>
+          : null
+        }
         <br/>
         {
           route === 'login'
