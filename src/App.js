@@ -11,6 +11,7 @@ import Model5 from './components/Model5'
 import BatchResults from './components/BatchResults'
 import Cookies from 'js-cookie';
 import {storage} from './components/Firebase'
+import Messenger from './components/Messenger';
 
 
 class App extends React.Component {
@@ -231,6 +232,7 @@ class App extends React.Component {
     return (
       <div className = 'App'>
         <Navigation onRouteChange={onRouteChange} isLoggedIn={isLoggedIn} route={route} signOut = {signOut}/>
+        <Messenger isLoggedIn={isLoggedIn}/>
         <br/>
         {
           route === 'login'
