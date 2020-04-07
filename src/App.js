@@ -9,7 +9,7 @@ import Model3 from './components/Model3'
 import Model4 from './components/Model4'
 import Model5 from './components/Model5'
 import BatchResults from './components/BatchResults'
-import Messenger from './components/Messenger'
+import Cookies from 'js-cookie';
 import {storage} from './components/Firebase'
 
 
@@ -42,6 +42,14 @@ class App extends React.Component {
   signOut = () =>{
     this.resetState()
     this.setState({route:'login',isLoggedIn:false})
+    Cookies.remove("isLoggedIn")
+  }
+
+  componentDidMount=()=>{
+    const isLoggedIn = Cookies.get("isLoggedIn")
+    if(isLoggedIn){
+      this.setState({isLoggedIn:true,route:'documentation'})
+    }
   }
 
   // Download Sample Result File
@@ -223,11 +231,6 @@ class App extends React.Component {
     return (
       <div className = 'App'>
         <Navigation onRouteChange={onRouteChange} isLoggedIn={isLoggedIn} route={route} signOut = {signOut}/>
-        {
-          isLoggedIn === true
-          ? <Messenger/>
-          : null
-        }
         <br/>
         {
           route === 'login'

@@ -1,5 +1,8 @@
 import React from 'react';
 import firebase from '../components/Firebase/index'
+import Spinner from 'react-bootstrap/Spinner';
+import Cookies from 'js-cookie';
+
 
 const formErrors = {
     emailError:'',
@@ -9,7 +12,8 @@ const initialState ={
     loginEmail : '',
     loginPassword : '',
     error : '',
-    formErrors
+	formErrors,
+	showSpinner:false,
 }
 class Login extends React.Component{
     constructor(props){
@@ -52,13 +56,16 @@ class Login extends React.Component{
     
 	onSignInSubmit=()=>{
 		const isValid = this.validate();
+
 		if(isValid){
-            console.log('Validated')
+			console.log('Validated')
+			this.setState({showSpinner:true})
 			firebase.auth().signInWithEmailAndPassword(this.state.loginEmail, this.state.loginPassword)
 			.then(()=>{
 				firebase.auth().onAuthStateChanged((user)=> {
 					if (user) {
 					  // User is signed in.
+					  Cookies.set("isLoggedIn","true")
 					  this.props.onRouteChange('documentation')
 					} else {
 					  // No user is signed in.
@@ -67,7 +74,8 @@ class Login extends React.Component{
 			})
 			.catch((error)=> {
 				// Handle Errors here.
-				this.setState({error:'wrong credentials'})
+				this.setState({error:'wrong credentials',showSpinner:false})
+
 				// ...
 			  }
 			  
@@ -107,11 +115,15 @@ class Login extends React.Component{
 			    </fieldset>
 			    <div className = "center">
 				    <div className="pr4 mt3 center">
-				      <input 
-				      onClick={onSignInSubmit} 
-				      className="b ph3 pv2 shadow-3 input-reset link ba b--black bg-transparent grow pointer f6 dib" 
-				      type="submit" 
-				      value="Sign in"/>
+					 {
+						!this.state.showSpinner
+						?<input 
+						onClick={onSignInSubmit} 
+						className="b ph3 pv2 shadow-3 input-reset link ba b--black bg-transparent grow pointer f6 dib" 
+						type="submit" 
+						value="Sign in"/>
+						:<p><Spinner animation='border'/> Signing In </p>
+					 }
 				    </div>
 					
 			    </div>
