@@ -67,7 +67,6 @@ class App extends React.Component {
     firebase.auth().onAuthStateChanged((user)=> {
       if (user) {
         // User is signed in.
-        console.log(user)
         this.setState({user})
         this.onRouteChange('documentation')
         
@@ -261,7 +260,7 @@ class App extends React.Component {
     return (
       <div className = 'App'>
         <Navigation onRouteChange={onRouteChange} isLoggedIn={isLoggedIn} route={route} signOut = {signOut} userName={userName} user={this.state.user} />
-        <Messenger isLoggedIn={isLoggedIn} />
+        {/* <Messenger isLoggedIn={isLoggedIn} /> */}
         <br/>
         {
           route === 'login'
