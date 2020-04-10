@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import Login from './components/Login'
+import Register from './components/Register'
 import Navigation from './components/Navigation'
 import Documentation from './components/Documentation'
 import Model1 from './components/Model1'
@@ -9,9 +10,11 @@ import Model3 from './components/Model3'
 import Model4 from './components/Model4'
 import Model5 from './components/Model5'
 import BatchResults from './components/BatchResults'
-import Cookies from 'js-cookie';
 import {storage} from './components/Firebase'
+import firebase from './components/Firebase/index'
 import Messenger from './components/Messenger';
+import VerifyEmail from './components/VerifyEmail';
+import ResetPassword from './components/ResetPassword';
 
 
 class App extends React.Component {
@@ -28,29 +31,54 @@ class App extends React.Component {
       selected_model:'Model5',
       error:null,
       showSpinner:false,
+      userName:"",
+      user:{},
     }
   }
 
   // Change routes
   onRouteChange = (route) =>{
-    if(route === 'documentation'){
-      this.setState({isLoggedIn:true})
+    if (route === 'login' || route === 'register' || route === 'resetPass') {
+      this.setState({route:route})
+    } else {
+      if (this.state.user) {
+        this.setState({isLoggedIn:true})
+        if(this.state.user.emailVerified){
+          this.setState({route:route})
+        }else{
+          this.setState({route:'verifyEmail'})
+        }
+      }
     }
-    this.setState({route:route})
   }
 
   // Sign Out
   signOut = () =>{
     this.resetState()
     this.setState({route:'login',isLoggedIn:false})
-    Cookies.remove("isLoggedIn")
+    firebase.auth().signOut()
+  }
+
+  setUserName = userName =>{
+    this.setState({userName})
+  }  
+
+  authenticateUser=()=>{
+    firebase.auth().onAuthStateChanged((user)=> {
+      if (user) {
+        // User is signed in.
+        console.log(user)
+        this.setState({user})
+        this.onRouteChange('documentation')
+        
+      } else {
+        // No user is signed in.
+      }
+    });
   }
 
   componentDidMount=()=>{
-    const isLoggedIn = Cookies.get("isLoggedIn")
-    if(isLoggedIn){
-      this.setState({isLoggedIn:true,route:'documentation'})
-    }
+    this.authenticateUser()
   }
 
   // Download Sample Result File
@@ -224,48 +252,55 @@ class App extends React.Component {
   }
 
   render(){
-    const {isLoggedIn, selectedFile, present_state, route, error, showSpinner} = this.state
+    const {isLoggedIn, selectedFile, present_state, route, error, showSpinner,userName} = this.state
     const {onRouteChange, modelSelectionHandler,
           fileDownloadHandler, fileUploadHandler,
           fileValidationHandler, resetState,
-          signOut, downloadSample} = this
+          signOut, downloadSample,
+          setUserName, verifyEmail} = this
     return (
       <div className = 'App'>
-        <Navigation onRouteChange={onRouteChange} isLoggedIn={isLoggedIn} route={route} signOut = {signOut}/>
-        <Messenger isLoggedIn={isLoggedIn}/>
+        <Navigation onRouteChange={onRouteChange} isLoggedIn={isLoggedIn} route={route} signOut = {signOut} userName={userName} user={this.state.user} />
+        <Messenger isLoggedIn={isLoggedIn} />
         <br/>
         {
           route === 'login'
           ? <Login onRouteChange = {onRouteChange}/>
+          : route === 'verifyEmail'
+          ? <VerifyEmail verifyEmail={verifyEmail}/>
+          : route === 'resetPass'
+          ? <ResetPassword onRouteChange = {onRouteChange} />
+          : route === 'register'
+          ? <Register onRouteChange = {onRouteChange} setUserName={setUserName} verifyEmail={verifyEmail} />
           : route === 'batch'
-            ? <BatchResults 
-                error={error}
-                resetState={resetState}
-                modelSelectionHandler={modelSelectionHandler}
-                present_state={present_state} 
-                selectedFile={selectedFile}
-                fileDownloadHandler={fileDownloadHandler} 
-                fileUploadHandler={fileUploadHandler}
-                fileValidationHandler={fileValidationHandler}
-                showSpinner = {showSpinner}
-                downloadSample = {downloadSample}
-              />
-            : route === 'home'
-              ? <Model1/>
-              : route === 'model2'
-                ? <Model2/>
-                : route === 'model3'
-                  ? <Model3/>
-                  : route === 'model4'
-                    ? <Model4/>
-                    : route === 'model5'
-                      ? <Model5/>
-                      : route === 'documentation'
-                        ? <Documentation 
-                        downloadSample={downloadSample}
-                        onRouteChange={onRouteChange}
-                        />
-                        : null
+          ? <BatchResults 
+              error={error}
+              resetState={resetState}
+              modelSelectionHandler={modelSelectionHandler}
+              present_state={present_state} 
+              selectedFile={selectedFile}
+              fileDownloadHandler={fileDownloadHandler} 
+              fileUploadHandler={fileUploadHandler}
+              fileValidationHandler={fileValidationHandler}
+              showSpinner = {showSpinner}
+              downloadSample = {downloadSample}
+            />
+          : route === 'home'
+          ? <Model1/>
+          : route === 'model2'
+          ? <Model2/>
+          : route === 'model3'
+          ? <Model3/>
+          : route === 'model4'
+          ? <Model4/>
+          : route === 'model5'
+          ? <Model5/>
+          : route === 'documentation'
+          ? <Documentation 
+          downloadSample={downloadSample}
+          onRouteChange={onRouteChange}
+          />
+          : null
         }  
       </div> 
     );

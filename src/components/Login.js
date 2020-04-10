@@ -1,7 +1,10 @@
 import React from 'react';
-import firebase from '../components/Firebase/index'
+import firebase from '../components/Firebase/index';
 import Spinner from 'react-bootstrap/Spinner';
-import Cookies from 'js-cookie';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 
 const formErrors = {
@@ -19,7 +22,17 @@ class Login extends React.Component{
     constructor(props){
         super(props)
         this.state = initialState
-    }
+	}
+	
+	uiConfig = {
+		signInFlow:"popup",
+		signInOptions:[
+			firebase.auth.GoogleAuthProvider.PROVIDER_ID
+		],
+		callbacks:{
+			signInSuccess:()=>false
+		}
+	}
 
     onEmailChange=(event)=>{
 		this.setState({loginEmail:event.target.value})
@@ -55,43 +68,36 @@ class Login extends React.Component{
     }
     
 	onSignInSubmit=()=>{
+		this.setState({error:""})
 		const isValid = this.validate();
 
 		if(isValid){
 			console.log('Validated')
 			this.setState({showSpinner:true})
-			firebase.auth().signInWithEmailAndPassword(this.state.loginEmail, this.state.loginPassword)
-			.then(()=>{
-				firebase.auth().onAuthStateChanged((user)=> {
-					if (user) {
-					  // User is signed in.
-					  Cookies.set("isLoggedIn","true")
-					  this.props.onRouteChange('documentation')
-					} else {
-					  // No user is signed in.
-					}
-				  });
-			})
-			.catch((error)=> {
-				// Handle Errors here.
-				this.setState({error:'wrong credentials',showSpinner:false})
 
-				// ...
-			  }
-			  
-			  );
+			// Signing in with firebase
+			firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+			.then(()=>{
+				firebase.auth().signInWithEmailAndPassword(this.state.loginEmail, this.state.loginPassword)
+				.catch((error)=> {
+					// Handle Errors here.
+					this.setState({error:error['message'],showSpinner:false})
+				}	  
+				);
+			})
+			
 		}
     }
 
     render(){
 		const {onEmailChange,onPasswordChange,onSignInSubmit}=this
-		const {emailError,passwordError} = this.state
+		const {emailError,passwordError,showSpinner} = this.state
         return(
             <article className="br3 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw6 center shadow-3">
 			<main className="pa4 black-80">
 			  <div className="measure">
 			    <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
-			      <legend className="f1 fw6 ph0 mh0">Admin Login</legend>
+			      <legend className="f1 fw6 ph0 mh0">Login</legend>
 			      <div className="mt3">
 			        <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
 			        <input 
@@ -113,23 +119,37 @@ class Login extends React.Component{
 			        <div className="db fw6 lh-copy f6 red">{passwordError}</div>
 			      </div>
 			    </fieldset>
-			    <div className = "center">
-				    <div className="pr4 mt3 center">
-					 {
-						!this.state.showSpinner
-						?<input 
-						onClick={onSignInSubmit} 
-						className="b ph3 pv2 shadow-3 input-reset link ba b--black bg-transparent grow pointer f6 dib" 
-						type="submit" 
-						value="Sign in"/>
-						:<p><Spinner animation='border'/> Signing In </p>
-					 }
-				    </div>
-					
-			    </div>
+		
+				{!showSpinner
+					?<Container fluid >
+					<Row className="pl2 mt3" xs={12} md={12}>
+						<Col>
+							<input 
+							onClick={onSignInSubmit} 
+							className="b ph3 pv2 shadow-3 input-reset link ba b--black bg-transparent grow pointer f6 dib" 
+							type="submit" 
+							value="Sign in"/>
+						</Col>
+						<Col className="">
+							<p onClick={()=>this.props.onRouteChange('register')} className="b ph3 pv2 dim shadow-3 ba b--black bg-transparent grow pointer f6 dib">Register</p>
+						</Col>
+					</Row>
+					<label className="db fw6 lh-copy f6 pointer" onClick={()=>this.props.onRouteChange('resetPass')}>Forget Password?</label>
+					<hr/>
+					<Row className="" xs={12} md={12}>
+						
+						<StyledFirebaseAuth
+							uiConfig = {this.uiConfig}
+							firebaseAuth = {firebase.auth()}
+						/>
+					</Row>
+					</Container>
+					:<p><Spinner animation='border'/> Signing In </p>
+				}
+			   
 			    {//Server Form Validation
-		      		this.state.error==="wrong credentials"
-		      		?<p className="db fw6 lh-copy f6 red">*Incorrect Email or Password</p>
+		      		this.state.error
+		      		?<p className="db fw6 lh-copy f6 red">*{this.state.error}</p>
 		      		:null
 				}
 			  </div>

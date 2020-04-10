@@ -1,13 +1,15 @@
 import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
+import NavDropdown from 'react-bootstrap/NavDropdown'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 
+const Navigation = ({isLoggedIn,onRouteChange,route,signOut,userName,user}) =>{
+	
 
-const Navigation = ({isLoggedIn,onRouteChange,route,signOut}) =>{
     if(isLoggedIn===true){
 		return (
 			<div>
@@ -18,13 +20,16 @@ const Navigation = ({isLoggedIn,onRouteChange,route,signOut}) =>{
 						<Nav className="mr-auto">
 							<Nav.Link href="" onClick={()=>onRouteChange('batch')}>Batch Result</Nav.Link>
 							<Nav.Link href="" onClick={()=>onRouteChange('home')}>Single Result</Nav.Link>
+							
 						</Nav>
 
 						<Nav>
+
+							<NavDropdown title={user.displayName ?user.displayName:userName} id="collasible-nav-dropdown" >
+        						<NavDropdown.Item href="#" onClick={()=>signOut()}>Sign Out</NavDropdown.Item>
+							</NavDropdown>
 							<Nav.Link href="" onClick={()=>onRouteChange('documentation')}>Documentation</Nav.Link>
-
-							<Nav.Link href="" onClick={()=>signOut()}>Sign Out</Nav.Link>
-
+							
 						</Nav>
 					</Navbar.Collapse>					
 				</Navbar>
